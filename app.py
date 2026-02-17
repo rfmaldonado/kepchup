@@ -6,6 +6,56 @@ import datetime
 # Configuración de la página
 st.set_page_config(page_title="Evaluación sensorial", layout="wide")
 
+# ---- ESTILOS PARA TEMA OSCURO ----
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: black;
+        color: white;
+    }
+    /* Texto de las etiquetas */
+    .stTextInput label, .stNumberInput label, .stSelectbox label, 
+    .stRadio label, .stCheckbox label {
+        color: white !important;
+    }
+    /* Fondo de los inputs */
+    .stTextInput input, .stNumberInput input, .stSelectbox select, 
+    .stTextArea textarea {
+        background-color: #333 !important;
+        color: white !important;
+        border-color: #555 !important;
+    }
+    /* Botones */
+    .stButton button {
+        background-color: #444;
+        color: white;
+        border: 1px solid #666;
+    }
+    .stButton button:hover {
+        background-color: #555;
+        color: white;
+    }
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        background-color: #222;
+    }
+    .stTabs [data-baseweb="tab"] {
+        color: white;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #333;
+    }
+    /* Dataframe */
+    .stDataFrame {
+        background-color: #222;
+        color: white;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Título común
 st.title("Evaluación sensorial")
 
@@ -13,17 +63,16 @@ st.title("Evaluación sensorial")
 if 'responses' not in st.session_state:
     st.session_state.responses = []
 
-# Crear las pestañas (ahora 4)
-tab1, tab2, tab3, tab4 = st.tabs([
-    "Condiciones que pueden influir en la percepción",
+# Crear las pestañas (ahora 3)
+tab1, tab2, tab3 = st.tabs([
+    "inicial",               # antes: "Condiciones que pueden influir en la percepción"
     "Datos Personales",
-    "Encuesta",
-    "Exportar datos"
+    "Encuesta"
 ])
 
-# ---------- PESTAÑA 1: Condiciones médicas y hábitos ----------
+# ---------- PESTAÑA 1: Inicial (Influye en la percepción) ----------
 with tab1:
-    st.header("Condiciones que pueden influir en la percepción")
+    st.header("Influye en la percepción")   # Nuevo encabezado
 
     cond_medica = st.radio(
         "¿Tiene alguna condición médica que afecte el gusto, el olfato o la sensibilidad oral (como sinusitis, rinitis, resfrío, gripe, congestión nasal u otra afección en este momento, etc.)?",
@@ -149,8 +198,9 @@ with tab3:
     if marca == "Otros":
         otros_marca_text = st.text_input("Especifique otra marca", key="marca_otros_text")
 
-    # Botón para guardar la respuesta
+    # --- BOTÓN GUARDAR (ahora también reinicia el formulario) ---
     if st.button("Guardar respuesta"):
+        # Recolectar datos
         nueva_ficha = len(st.session_state.responses) + 1
         respuesta = {
             "Ficha N°": nueva_ficha,
@@ -188,25 +238,67 @@ with tab3:
         st.session_state.responses.append(respuesta)
         st.success(f"Respuesta guardada correctamente. Ficha N° {nueva_ficha}")
 
-# ---------- PESTAÑA 4: Exportar datos ----------
-with tab4:
-    st.header("Exportar datos")
+        # Reiniciar todos los campos del formulario a sus valores por defecto
+        # (excepto la lista 'responses' que queremos conservar)
+        valores_por_defecto = {
+            # Tab1 (radios con valor "No")
+            "cond_medica": "No",
+            "medicamentos": "No",
+            "alergias": "No",
+            "fumado": "No",
+            "alcohol": "No",
+            "cafe": "No",
+            "cepillado": "No",
+            "fatigado": "No",
+            "estres": "No",
+            # Tab2
+            "nombre": "",
+            "apellido": "",
+            "edad": 0,
+            "genero": "Femenino",
+            "volveria": "No",
+            "contacto": "",
+            # Tab3
+            "conoce": "No",
+            "ha_probado": "No",
+            "sim_mayonesa": False,
+            "sim_aioli": False,
+            "sim_cesar": False,
+            "sim_otros": False,
+            "sim_otros_text": "",
+            "consumirian": "No",
+            "frecuencia": "",
+            "cantidad": "",
+            "marca": "Mayonesa",
+            "marca_otros_text": ""
+        }
 
-    if st.session_state.responses:
-        df = pd.DataFrame(st.session_state.responses)
-        st.dataframe(df)  # Vista previa
+        for key, valor in valores_por_defecto.items():
+            if key in st.session_state:
+                st.session_state[key] = valor
 
-        # Botón para descargar Excel
-        output = BytesIO()
-        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            df.to_excel(writer, index=False, sheet_name='Respuestas')
-        output.seek(0)
+        # Refrescar la aplicación para mostrar los campos reiniciados
+        st.rerun()
 
-        st.download_button(
-            label="📥 Descargar como Excel",
-            data=output,
-            file_name=f"evaluacion_sensorial_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-    else:
-        st.info("Aún no hay respuestas guardadas. Complete y guarde al menos una para poder exportar.")
+# ---------- SECCIÓN DE EXPORTACIÓN (fuera de las pestañas) ----------
+st.divider()
+st.header("Exportar datos")
+
+if st.session_state.responses:
+    df = pd.DataFrame(st.session_state.responses)
+    st.dataframe(df)
+
+    # Botón para descargar Excel (formato .xlsx correcto)
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Respuestas')
+    output.seek(0)
+
+    st.download_button(
+        label="📥 Descargar como Excel",
+        data=output,
+        file_name=f"evaluacion_sensorial_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+else:
+    st.info("Aún no hay respuestas guardadas. Complete y guarde al menos una para poder exportar.")
