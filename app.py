@@ -6,50 +6,68 @@ import datetime
 # Configuración de la página
 st.set_page_config(page_title="Evaluación sensorial", layout="wide")
 
-# ---- ESTILOS PARA TEMA OSCURO ----
+# ---- ESTILOS PERSONALIZADOS: FONDO VERDE PÁLIDO, TEXTO NEGRO, BORDES EN PESTAÑAS ----
 st.markdown(
     """
     <style>
+    /* Fondo general y color de texto */
     .stApp {
-        background-color: black;
-        color: white;
+        background-color: #d4edda;
+        color: black;
     }
-    /* Texto de las etiquetas */
+    /* Etiquetas de los widgets */
     .stTextInput label, .stNumberInput label, .stSelectbox label, 
     .stRadio label, .stCheckbox label {
-        color: white !important;
+        color: black !important;
+        font-weight: 500;
     }
-    /* Fondo de los inputs */
+    /* Inputs, selects, etc. con fondo claro y texto oscuro */
     .stTextInput input, .stNumberInput input, .stSelectbox select, 
-    .stTextArea textarea {
-        background-color: #333 !important;
-        color: white !important;
-        border-color: #555 !important;
+    .stTextArea textarea, .stDateInput input {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #aaa !important;
     }
     /* Botones */
     .stButton button {
-        background-color: #444;
+        background-color: #28a745;
         color: white;
-        border: 1px solid #666;
+        border: 1px solid #1e7e34;
     }
     .stButton button:hover {
-        background-color: #555;
+        background-color: #218838;
         color: white;
     }
-    /* Tabs */
+    /* Tabs: contenedor con borde */
     .stTabs [data-baseweb="tab-list"] {
-        background-color: #222;
+        background-color: #c3e6cb;
+        border: 1px solid #28a745;
+        border-radius: 8px;
+        padding: 4px;
     }
     .stTabs [data-baseweb="tab"] {
-        color: white;
+        color: black;
+        border-radius: 6px;
+        padding: 8px 16px;
+        margin: 2px;
     }
     .stTabs [aria-selected="true"] {
-        background-color: #333;
+        background-color: #28a745 !important;
+        color: white !important;
+        border: 1px solid #1e7e34;
     }
     /* Dataframe */
     .stDataFrame {
-        background-color: #222;
-        color: white;
+        background-color: white;
+        color: black;
+    }
+    /* Encabezados */
+    h1, h2, h3, h4, h5, h6, .stMarkdown {
+        color: black;
+    }
+    /* Separador */
+    hr {
+        border-color: #28a745;
     }
     </style>
     """,
@@ -59,7 +77,7 @@ st.markdown(
 # Título común
 st.title("Evaluación sensorial")
 
-# Inicializar el estado de la sesión para almacenar las respuestas
+# Inicializar el estado de la sesión para almacenar las respuestas (solo de la segunda pestaña)
 if 'responses' not in st.session_state:
     st.session_state.responses = []
 
@@ -71,149 +89,105 @@ with st.form(key="encuesta_form", clear_on_submit=True):
         "Encuesta"
     ])
 
-    # ---------- PESTAÑA 1: Inicial (Influye en la percepción) ----------
+    # ---------- PESTAÑA 1: Inicial (solo informativa, sus datos NO se guardan) ----------
     with tab1:
-        st.header("Influye en la percepción")
-        # Las preguntas de esta pestaña se mantienen igual, pero también se numerarán
-        # (aunque no se fusionan, las incluimos en el formulario con sus números)
-        # Vamos a numerar las preguntas de la pestaña 1 también para mantener consistencia.
-        # Usaremos un contador que comenzará en 1 y se incrementará en cada pregunta.
+        st.header("Condiciones que pueden influir en la percepción")
+        st.markdown("*(Esta información es solo para referencia del encuestador y no se almacena)*")
 
-        # Inicializamos un contador de preguntas (se usará luego en el diccionario)
-        # Pero como las preguntas están en distintas pestañas, necesitamos un número global.
-        # Definiremos una lista de preguntas con sus claves y etiquetas para luego construir el diccionario.
-        # Para simplificar, asignaremos manualmente los números.
-
-        # Pregunta 1
-        st.markdown("**1. Condición médica**")
-        cond_medica = st.radio(
-            "¿Tiene alguna condición médica que afecte el gusto, el olfato o la sensibilidad oral (como sinusitis, rinitis, resfrío, gripe, congestión nasal u otra afección en este momento, etc.)?",
+        # Preguntas (sin registro)
+        st.radio(
+            "¿Tiene alguna condición médica que afecte el gusto, el olfato o la sensibilidad oral?",
             options=["Sí", "No"],
             index=1,
             key="cond_medica",
-            horizontal=True,
-            label_visibility="collapsed"  # Ocultamos la etiqueta porque ya pusimos el número arriba
+            horizontal=True
         )
-
-        # Pregunta 2
-        st.markdown("**2. Medicamentos**")
-        medicamentos = st.radio(
-            "¿Toma actualmente algún medicamento que pueda alterar el gusto, el olfato o la salivación (como antihistamínicos, antibióticos, ansiolíticos, etc.)?",
+        st.radio(
+            "¿Toma actualmente algún medicamento que pueda alterar el gusto, el olfato o la salivación?",
             options=["Sí", "No"],
             index=1,
             key="medicamentos",
-            horizontal=True,
-            label_visibility="collapsed"
+            horizontal=True
         )
-
-        # Pregunta 3
-        st.markdown("**3. Alergias alimentarias**")
-        alergias = st.radio(
+        st.radio(
             "¿Tiene alguna alergia alimentaria relacionada con aceite de oliva, lactosa, gluten, proteínas del huevo algún condimento?",
             options=["Sí", "No"],
             index=1,
             key="alergias",
-            horizontal=True,
-            label_visibility="collapsed"
+            horizontal=True
         )
-
-        # Pregunta 4
-        st.markdown("**4. Fumado última hora**")
-        fumado = st.radio(
-            "¿Ha fumado cigarrillos u otros productos en la última hora, antes de hacer esta prueba?",
+        st.radio(
+            "¿Ha fumado cigarrillos u otros productos en la última hora?",
             options=["Sí", "No"],
             index=1,
             key="fumado",
-            horizontal=True,
-            label_visibility="collapsed"
+            horizontal=True
         )
-
-        # Pregunta 5
-        st.markdown("**5. Alcohol última hora**")
-        alcohol = st.radio(
-            "¿Ha consumido alcohol en la última hora, antes de hacer esta prueba?",
+        st.radio(
+            "¿Ha consumido alcohol en la última hora?",
             options=["Sí", "No"],
             index=1,
             key="alcohol",
-            horizontal=True,
-            label_visibility="collapsed"
+            horizontal=True
         )
-
-        # Pregunta 6
-        st.markdown("**6. Café/chicles/menta última hora**")
-        cafe = st.radio(
-            "¿Ha consumido café, chicles, menta en la última hora, antes de hacer esta prueba?",
+        st.radio(
+            "¿Ha consumido café, chicles, menta en la última hora?",
             options=["Sí", "No"],
             index=1,
             key="cafe",
-            horizontal=True,
-            label_visibility="collapsed"
+            horizontal=True
         )
-
-        # Pregunta 7
-        st.markdown("**7. Cepillado justo antes**")
-        cepillado = st.radio(
+        st.radio(
             "¿Se cepilló los dientes justo antes del test?",
             options=["Sí", "No"],
             index=1,
             key="cepillado",
-            horizontal=True,
-            label_visibility="collapsed"
+            horizontal=True
         )
-
-        # Pregunta 8
-        st.markdown("**8. Fatiga/sueño**")
-        fatigado = st.radio(
+        st.radio(
             "¿Se siente fatigado/a o con sueño?",
             options=["Sí", "No"],
             index=1,
             key="fatigado",
-            horizontal=True,
-            label_visibility="collapsed"
+            horizontal=True
         )
-
-        # Pregunta 9
-        st.markdown("**9. Estrés/ansiedad**")
-        estres = st.radio(
+        st.radio(
             "¿Siente estrés, ansiedad o malestar emocional?",
             options=["Sí", "No"],
             index=1,
             key="estres",
-            horizontal=True,
-            label_visibility="collapsed"
+            horizontal=True
         )
 
-    # ---------- PESTAÑA 2: Encuesta (Datos personales + Encuesta del producto) ----------
+    # ---------- PESTAÑA 2: Encuesta (Datos personales + producto) - SUS DATOS SE GUARDAN ----------
     with tab2:
-        st.header("Encuesta Completa")
+        st.header("Encuesta")
 
-        # Mostrar número de ficha (no es una pregunta)
         st.markdown(f"**Ficha N.º:** {len(st.session_state.responses) + 1} (se asignará al guardar)")
 
-        # --- Datos personales (continuación de la numeración) ---
-        # Pregunta 10
-        st.markdown("**10. Nombre**")
+        # --- Pregunta 1: Nombre ---
+        st.markdown("**1. Nombre**")
         nombre = st.text_input("Nombre", key="nombre", label_visibility="collapsed")
 
-        # Pregunta 11
-        st.markdown("**11. Apellido**")
+        # --- Pregunta 2: Apellido ---
+        st.markdown("**2. Apellido**")
         apellido = st.text_input("Apellido", key="apellido", label_visibility="collapsed")
 
-        # Pregunta 12
-        st.markdown("**12. Edad**")
+        # --- Pregunta 3: Edad ---
+        st.markdown("**3. Edad**")
         edad = st.number_input("Edad", min_value=0, max_value=120, step=1, key="edad", label_visibility="collapsed")
 
-        # Pregunta 13
-        st.markdown("**13. Género**")
+        # --- Pregunta 4: Género ---
+        st.markdown("**4. Género**")
         genero = st.selectbox(
-            "Sexo o Género",
+            "Género",
             options=["Femenino", "Masculino", "Prefiero no responder"],
             key="genero",
             label_visibility="collapsed"
         )
 
-        # Pregunta 14
-        st.markdown("**14. ¿Volvería a participar?**")
+        # --- Pregunta 5: ¿Volvería a participar? ---
+        st.markdown("**5. ¿Volvería a participar?**")
         volveria = st.radio(
             "¿Volvería a participar en esta prueba?",
             options=["Sí", "No"],
@@ -223,27 +197,40 @@ with st.form(key="encuesta_form", clear_on_submit=True):
             label_visibility="collapsed"
         )
 
-        # Campo condicional (no es una pregunta numerada, es un subcampo de la 14)
+        # --- Pregunta 5b: Contacto (solo si responde Sí) ---
         if volveria == "Sí":
             contacto = st.text_input("Contacto (número de teléfono)", key="contacto")
         else:
             st.session_state["contacto"] = ""
 
-        # --- Encuesta sobre el producto (continuación) ---
-        st.markdown("---")  # Separador visual
-        st.markdown("**Encuesta sobre el producto**")
+        st.markdown("---")
+        st.markdown("**Información sobre el producto**")
         st.markdown("*Este aderezo tiene aceite de oliva, aceite de girasol y leche de cabra*")
 
-        # Pregunta 15
-        st.markdown("**15. ¿Conoce este tipo de producto?**")
-        conoce = st.radio("¿Conoce este tipo de producto?", options=["Sí", "No"], index=1, key="conoce", horizontal=True, label_visibility="collapsed")
+        # --- Pregunta 6: ¿Conoce este tipo de producto? ---
+        st.markdown("**6. ¿Conoce este tipo de producto?**")
+        conoce = st.radio(
+            "¿Conoce este tipo de producto?",
+            options=["Sí", "No"],
+            index=1,
+            key="conoce",
+            horizontal=True,
+            label_visibility="collapsed"
+        )
 
-        # Pregunta 16
-        st.markdown("**16. ¿Ha probado antes este tipo de producto?**")
-        ha_probado = st.radio("¿Ha probado este tipo de producto antes?", options=["Sí", "No"], index=1, key="ha_probado", horizontal=True, label_visibility="collapsed")
+        # --- Pregunta 7: ¿Ha probado antes? ---
+        st.markdown("**7. ¿Ha probado antes este tipo de producto?**")
+        ha_probado = st.radio(
+            "¿Ha probado este tipo de producto antes?",
+            options=["Sí", "No"],
+            index=1,
+            key="ha_probado",
+            horizontal=True,
+            label_visibility="collapsed"
+        )
 
-        # Pregunta 17
-        st.markdown("**17. ¿Suele consumir aderezos similares? (Seleccione todos los que correspondan)**")
+        # --- Pregunta 8: Consumo de aderezos similares (múltiple) ---
+        st.markdown("**8. ¿Suele consumir aderezos similares? (puede seleccionar varios)**")
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             mayonesa = st.checkbox("Mayonesa", key="sim_mayonesa")
@@ -254,15 +241,14 @@ with st.form(key="encuesta_form", clear_on_submit=True):
         with col4:
             otros_sim = st.checkbox("Otros", key="sim_otros")
 
-        # Subcampo condicional (no numerado aparte)
         otros_sim_text = ""
         if otros_sim:
             otros_sim_text = st.text_input("Especifique otros aderezos similares", key="sim_otros_text")
         else:
             st.session_state["sim_otros_text"] = ""
 
-        # Pregunta 18
-        st.markdown("**18. ¿Cree que todos los integrantes de su hogar consumirían este aderezo por sus ingredientes?**")
+        # --- Pregunta 9: ¿Cree que todos consumirían? ---
+        st.markdown("**9. ¿Cree que todos los integrantes de su hogar consumirían este aderezo por sus ingredientes?**")
         consumirian = st.radio(
             "¿Cree que todos los integrantes de su hogar consumirían este aderezo por sus ingredientes?",
             options=["Sí", "No"],
@@ -272,16 +258,16 @@ with st.form(key="encuesta_form", clear_on_submit=True):
             label_visibility="collapsed"
         )
 
-        # Pregunta 19
-        st.markdown("**19. ¿Con qué frecuencia consume aderezos?**")
+        # --- Pregunta 10: Frecuencia de consumo ---
+        st.markdown("**10. ¿Con qué frecuencia consume aderezos?**")
         frecuencia = st.text_input("Frecuencia", key="frecuencia", label_visibility="collapsed")
 
-        # Pregunta 20
-        st.markdown("**20. ¿Qué cantidad de aderezos consumen en su hogar por mes?**")
+        # --- Pregunta 11: Cantidad mensual ---
+        st.markdown("**11. ¿Qué cantidad de aderezos consumen en su hogar por mes?**")
         cantidad = st.text_input("Cantidad mensual", key="cantidad", label_visibility="collapsed")
 
-        # Pregunta 21
-        st.markdown("**21. Marca de aderezos más consumida normalmente en su hogar**")
+        # --- Pregunta 12: Marca preferida ---
+        st.markdown("**12. Marca de aderezos más consumida normalmente en su hogar**")
         marca = st.selectbox(
             "Marca",
             options=["Mayonesa", "Aioli", "Salsas César", "Otros"],
@@ -300,38 +286,39 @@ with st.form(key="encuesta_form", clear_on_submit=True):
     # --- PROCESAMIENTO DEL FORMULARIO (solo si se envió) ---
     if submitted:
         nueva_ficha = len(st.session_state.responses) + 1
-        # Construimos el diccionario con claves que incluyen el número de pregunta
+        # Solo guardamos los datos de la pestaña "Encuesta" (tab2)
         respuesta = {
             "Ficha N°": nueva_ficha,
             "Fecha": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            # Preguntas de la pestaña 1 (numeradas del 1 al 9)
-            "P1_Condición médica": cond_medica,
-            "P2_Medicamentos": medicamentos,
-            "P3_Alergias": alergias,
-            "P4_Fumado última hora": fumado,
-            "P5_Alcohol última hora": alcohol,
-            "P6_Café/chicles/menta": cafe,
-            "P7_Cepillado antes": cepillado,
-            "P8_Fatiga/sueño": fatigado,
-            "P9_Estrés/ansiedad": estres,
-            # Preguntas de la pestaña 2 (a partir de la 10)
-            "P10_Nombre": nombre,
-            "P11_Apellido": apellido,
-            "P12_Edad": edad,
-            "P13_Género": genero,
-            "P14_Volvería a participar": volveria,
-            "P14_Contacto": st.session_state.contacto if volveria == "Sí" else "",
-            "P15_Conoce producto": conoce,
-            "P16_Ha probado antes": ha_probado,
-            "P17_Consume Mayonesa": "Sí" if mayonesa else "No",
-            "P17_Consume Aioli": "Sí" if aioli else "No",
-            "P17_Consume Salsas César": "Sí" if cesar else "No",
-            "P17_Consume Otros similares": otros_sim_text if otros_sim else "",
-            "P18_Todos consumirían": consumirian,
-            "P19_Frecuencia consumo": frecuencia,
-            "P20_Cantidad mensual": cantidad,
-            "P21_Marca preferida": marca,
-            "P21_Otra marca especificada": otros_marca_text if marca == "Otros" else ""
+            # Pregunta 1
+            "P1_Nombre": nombre,
+            # Pregunta 2
+            "P2_Apellido": apellido,
+            # Pregunta 3
+            "P3_Edad": edad,
+            # Pregunta 4
+            "P4_Género": genero,
+            # Pregunta 5
+            "P5_Volvería a participar": volveria,
+            "P5_Contacto": st.session_state.contacto if volveria == "Sí" else "",
+            # Pregunta 6
+            "P6_Conoce producto": conoce,
+            # Pregunta 7
+            "P7_Ha probado antes": ha_probado,
+            # Pregunta 8 (subpreguntas)
+            "P8_Mayonesa": "Sí" if mayonesa else "No",
+            "P8_Aioli": "Sí" if aioli else "No",
+            "P8_Salsas César": "Sí" if cesar else "No",
+            "P8_Otros similares (especificar)": otros_sim_text if otros_sim else "",
+            # Pregunta 9
+            "P9_Todos consumirían": consumirian,
+            # Pregunta 10
+            "P10_Frecuencia consumo": frecuencia,
+            # Pregunta 11
+            "P11_Cantidad mensual": cantidad,
+            # Pregunta 12
+            "P12_Marca preferida": marca,
+            "P12_Otra marca especificada": otros_marca_text if marca == "Otros" else ""
         }
         st.session_state.responses.append(respuesta)
         st.success(f"Respuesta guardada correctamente. Ficha N° {nueva_ficha}")
@@ -344,7 +331,6 @@ if st.session_state.responses:
     df = pd.DataFrame(st.session_state.responses)
     st.dataframe(df)
 
-    # Botón para descargar Excel (formato .xlsx correcto)
     output = BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, index=False, sheet_name='Respuestas')
