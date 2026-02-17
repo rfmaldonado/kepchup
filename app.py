@@ -66,7 +66,7 @@ if 'responses' not in st.session_state:
 # Crear las pestañas (solo 3)
 tab1, tab2, tab3 = st.tabs([
     "inicial",
-    "Datos Personales",
+    "Datos",
     "Encuesta"
 ])
 
@@ -312,4 +312,4 @@ if st.session_state.responses:
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 else:
-    st.info("Aún no hay respuestas guardadas. Complete y guarde al menos una para poder exportar.")
+    st.info("No hay respuestas para exportar.")
