@@ -10,25 +10,21 @@ st.set_page_config(page_title="Evaluación sensorial", layout="wide")
 st.markdown(
     """
     <style>
-    /* Fondo general y color de texto */
     .stApp {
         background-color: #d4edda;
         color: black;
     }
-    /* Etiquetas de los widgets */
     .stTextInput label, .stNumberInput label, .stSelectbox label, 
     .stRadio label, .stCheckbox label {
         color: black !important;
         font-weight: 500;
     }
-    /* Inputs, selects, etc. con fondo claro y texto oscuro */
     .stTextInput input, .stNumberInput input, .stSelectbox select, 
     .stTextArea textarea, .stDateInput input {
         background-color: white !important;
         color: black !important;
         border: 1px solid #aaa !important;
     }
-    /* Botones */
     .stButton button {
         background-color: #28a745;
         color: white;
@@ -56,16 +52,13 @@ st.markdown(
         color: white !important;
         border: 1px solid #1e7e34;
     }
-    /* Dataframe */
     .stDataFrame {
         background-color: white;
         color: black;
     }
-    /* Encabezados */
     h1, h2, h3, h4, h5, h6, .stMarkdown {
         color: black;
     }
-    /* Separador */
     hr {
         border-color: #28a745;
     }
@@ -81,90 +74,87 @@ st.title("Evaluación sensorial")
 if 'responses' not in st.session_state:
     st.session_state.responses = []
 
-# --- FORMULARIO PRINCIPAL (con limpieza automática al enviar) ---
-with st.form(key="encuesta_form", clear_on_submit=True):
-    # Crear las pestañas (solo 2)
-    tab1, tab2 = st.tabs([
-        "inicial",
-        "Encuesta"
-    ])
+# Crear las tres pestañas
+tab1, tab2, tab3 = st.tabs(["inicial", "encuesta", "datos"])
 
-    # ---------- PESTAÑA 1: Inicial (solo informativa, sus datos NO se guardan) ----------
-    with tab1:
-        st.header("Condiciones que pueden influir en la percepción")
-        st.markdown("*(Esta información es solo para referencia del encuestador y no se almacena)*")
+# ---------- PESTAÑA 1: Inicial (solo informativa, sus datos NO se guardan) ----------
+with tab1:
+    st.header("Condiciones que pueden influir en la percepción")
+    st.markdown("*(Esta información es solo para referencia del encuestador y no se almacena)*")
 
-        # Preguntas (sin registro)
-        st.radio(
-            "¿Tiene alguna condición médica que afecte el gusto, el olfato o la sensibilidad oral?",
-            options=["Sí", "No"],
-            index=1,
-            key="cond_medica",
-            horizontal=True
-        )
-        st.radio(
-            "¿Toma actualmente algún medicamento que pueda alterar el gusto, el olfato o la salivación?",
-            options=["Sí", "No"],
-            index=1,
-            key="medicamentos",
-            horizontal=True
-        )
-        st.radio(
-            "¿Tiene alguna alergia alimentaria relacionada con aceite de oliva, lactosa, gluten, proteínas del huevo algún condimento?",
-            options=["Sí", "No"],
-            index=1,
-            key="alergias",
-            horizontal=True
-        )
-        st.radio(
-            "¿Ha fumado cigarrillos u otros productos en la última hora?",
-            options=["Sí", "No"],
-            index=1,
-            key="fumado",
-            horizontal=True
-        )
-        st.radio(
-            "¿Ha consumido alcohol en la última hora?",
-            options=["Sí", "No"],
-            index=1,
-            key="alcohol",
-            horizontal=True
-        )
-        st.radio(
-            "¿Ha consumido café, chicles, menta en la última hora?",
-            options=["Sí", "No"],
-            index=1,
-            key="cafe",
-            horizontal=True
-        )
-        st.radio(
-            "¿Se cepilló los dientes justo antes del test?",
-            options=["Sí", "No"],
-            index=1,
-            key="cepillado",
-            horizontal=True
-        )
-        st.radio(
-            "¿Se siente fatigado/a o con sueño?",
-            options=["Sí", "No"],
-            index=1,
-            key="fatigado",
-            horizontal=True
-        )
-        st.radio(
-            "¿Siente estrés, ansiedad o malestar emocional?",
-            options=["Sí", "No"],
-            index=1,
-            key="estres",
-            horizontal=True
-        )
+    # Preguntas (sin registro, pero con keys para mantener estado si es necesario)
+    st.radio(
+        "¿Tiene alguna condición médica que afecte el gusto, el olfato o la sensibilidad oral?",
+        options=["Sí", "No"],
+        index=1,
+        key="cond_medica",
+        horizontal=True
+    )
+    st.radio(
+        "¿Toma actualmente algún medicamento que pueda alterar el gusto, el olfato o la salivación?",
+        options=["Sí", "No"],
+        index=1,
+        key="medicamentos",
+        horizontal=True
+    )
+    st.radio(
+        "¿Tiene alguna alergia alimentaria relacionada con aceite de oliva, lactosa, gluten, proteínas del huevo algún condimento?",
+        options=["Sí", "No"],
+        index=1,
+        key="alergias",
+        horizontal=True
+    )
+    st.radio(
+        "¿Ha fumado cigarrillos u otros productos en la última hora?",
+        options=["Sí", "No"],
+        index=1,
+        key="fumado",
+        horizontal=True
+    )
+    st.radio(
+        "¿Ha consumido alcohol en la última hora?",
+        options=["Sí", "No"],
+        index=1,
+        key="alcohol",
+        horizontal=True
+    )
+    st.radio(
+        "¿Ha consumido café, chicles, menta en la última hora?",
+        options=["Sí", "No"],
+        index=1,
+        key="cafe",
+        horizontal=True
+    )
+    st.radio(
+        "¿Se cepilló los dientes justo antes del test?",
+        options=["Sí", "No"],
+        index=1,
+        key="cepillado",
+        horizontal=True
+    )
+    st.radio(
+        "¿Se siente fatigado/a o con sueño?",
+        options=["Sí", "No"],
+        index=1,
+        key="fatigado",
+        horizontal=True
+    )
+    st.radio(
+        "¿Siente estrés, ansiedad o malestar emocional?",
+        options=["Sí", "No"],
+        index=1,
+        key="estres",
+        horizontal=True
+    )
 
-    # ---------- PESTAÑA 2: Encuesta (Datos personales + producto) - SUS DATOS SE GUARDAN ----------
-    with tab2:
-        st.header("Encuesta")
+# ---------- PESTAÑA 2: Encuesta (datos que SÍ se guardan) ----------
+with tab2:
+    st.header("Encuesta")
 
-        st.markdown(f"**Ficha N.º:** {len(st.session_state.responses) + 1} (se asignará al guardar)")
+    st.markdown(f"**Ficha N.º:** {len(st.session_state.responses) + 1} (se asignará al guardar)")
 
+    # Formulario para los datos que se guardan
+    with st.form(key="encuesta_form"):
         # --- Pregunta 1: Nombre ---
         st.markdown("**1. Nombre**")
         nombre = st.text_input("Nombre", key="nombre", label_visibility="collapsed")
@@ -201,6 +191,7 @@ with st.form(key="encuesta_form", clear_on_submit=True):
         if volveria == "Sí":
             contacto = st.text_input("Contacto (número de teléfono)", key="contacto")
         else:
+            contacto = ""
             st.session_state["contacto"] = ""
 
         st.markdown("---")
@@ -280,67 +271,55 @@ with st.form(key="encuesta_form", clear_on_submit=True):
         else:
             st.session_state["marca_otros_text"] = ""
 
-    # --- BOTÓN DE ENVÍO (dentro del formulario) ---
-    submitted = st.form_submit_button("Guardar respuesta")
+        # Botón de guardar (dentro del formulario)
+        submitted = st.form_submit_button("Guardar respuesta")
 
-    # --- PROCESAMIENTO DEL FORMULARIO (solo si se envió) ---
-    if submitted:
-        nueva_ficha = len(st.session_state.responses) + 1
-        # Solo guardamos los datos de la pestaña "Encuesta" (tab2)
-        respuesta = {
-            "Ficha N°": nueva_ficha,
-            "Fecha": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            # Pregunta 1
-            "P1_Nombre": nombre,
-            # Pregunta 2
-            "P2_Apellido": apellido,
-            # Pregunta 3
-            "P3_Edad": edad,
-            # Pregunta 4
-            "P4_Género": genero,
-            # Pregunta 5
-            "P5_Volvería a participar": volveria,
-            "P5_Contacto": st.session_state.contacto if volveria == "Sí" else "",
-            # Pregunta 6
-            "P6_Conoce producto": conoce,
-            # Pregunta 7
-            "P7_Ha probado antes": ha_probado,
-            # Pregunta 8 (subpreguntas)
-            "P8_Mayonesa": "Sí" if mayonesa else "No",
-            "P8_Aioli": "Sí" if aioli else "No",
-            "P8_Salsas César": "Sí" if cesar else "No",
-            "P8_Otros similares (especificar)": otros_sim_text if otros_sim else "",
-            # Pregunta 9
-            "P9_Todos consumirían": consumirian,
-            # Pregunta 10
-            "P10_Frecuencia consumo": frecuencia,
-            # Pregunta 11
-            "P11_Cantidad mensual": cantidad,
-            # Pregunta 12
-            "P12_Marca preferida": marca,
-            "P12_Otra marca especificada": otros_marca_text if marca == "Otros" else ""
-        }
-        st.session_state.responses.append(respuesta)
-        st.success(f"Respuesta guardada correctamente. Ficha N° {nueva_ficha}")
+        # Procesar el envío del formulario
+        if submitted:
+            nueva_ficha = len(st.session_state.responses) + 1
+            # Solo guardamos los datos de esta pestaña (los de la pestaña "inicial" se ignoran)
+            respuesta = {
+                "Ficha N°": nueva_ficha,
+                "Fecha": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "P1_Nombre": nombre,
+                "P2_Apellido": apellido,
+                "P3_Edad": edad,
+                "P4_Género": genero,
+                "P5_Volvería a participar": volveria,
+                "P5_Contacto": contacto if volveria == "Sí" else "",
+                "P6_Conoce producto": conoce,
+                "P7_Ha probado antes": ha_probado,
+                "P8_Mayonesa": "Sí" if mayonesa else "No",
+                "P8_Aioli": "Sí" if aioli else "No",
+                "P8_Salsas César": "Sí" if cesar else "No",
+                "P8_Otros similares (especificar)": otros_sim_text if otros_sim else "",
+                "P9_Todos consumirían": consumirian,
+                "P10_Frecuencia consumo": frecuencia,
+                "P11_Cantidad mensual": cantidad,
+                "P12_Marca preferida": marca,
+                "P12_Otra marca especificada": otros_marca_text if marca == "Otros" else ""
+            }
+            st.session_state.responses.append(respuesta)
+            st.success(f"Respuesta guardada correctamente. Ficha N° {nueva_ficha}")
 
-# ---------- SECCIÓN DE EXPORTACIÓN (fuera del formulario) ----------
-st.divider()
-st.header("Exportar datos")
+# ---------- PESTAÑA 3: Datos (exportación) ----------
+with tab3:
+    st.header("Exportar datos")
 
-if st.session_state.responses:
-    df = pd.DataFrame(st.session_state.responses)
-    st.dataframe(df)
+    if st.session_state.responses:
+        df = pd.DataFrame(st.session_state.responses)
+        st.dataframe(df)
 
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        df.to_excel(writer, index=False, sheet_name='Respuestas')
-    output.seek(0)
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, index=False, sheet_name='Respuestas')
+        output.seek(0)
 
-    st.download_button(
-        label="📥 Descargar como Excel",
-        data=output,
-        file_name=f"evaluacion_sensorial_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-else:
-    st.info("Aún no hay respuestas guardadas. Complete y guarde al menos una para poder exportar.")
+        st.download_button(
+            label="Descargar",
+            data=output,
+            file_name=f"evaluacion_sensorial_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+    else:
+        st.info("Aún no hay respuestas guardadas. Complete y guarde al menos una para poder exportar.")
