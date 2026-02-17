@@ -63,70 +63,80 @@ st.title("Evaluación sensorial")
 if 'responses' not in st.session_state:
     st.session_state.responses = []
 
-# Crear las pestañas (ahora 3)
+# Crear las pestañas (solo 3)
 tab1, tab2, tab3 = st.tabs([
-    "inicial",               # antes: "Condiciones que pueden influir en la percepción"
+    "inicial",
     "Datos Personales",
     "Encuesta"
 ])
 
 # ---------- PESTAÑA 1: Inicial (Influye en la percepción) ----------
 with tab1:
-    st.header("Influye en la percepción")   # Nuevo encabezado
+    st.header("Influye en la percepción")
 
+    # Todas las radios ahora tienen horizontal=True
     cond_medica = st.radio(
         "¿Tiene alguna condición médica que afecte el gusto, el olfato o la sensibilidad oral (como sinusitis, rinitis, resfrío, gripe, congestión nasal u otra afección en este momento, etc.)?",
         options=["Sí", "No"],
         index=1,
-        key="cond_medica"
+        key="cond_medica",
+        horizontal=True
     )
     medicamentos = st.radio(
         "¿Toma actualmente algún medicamento que pueda alterar el gusto, el olfato o la salivación (como antihistamínicos, antibióticos, ansiolíticos, etc.)?",
         options=["Sí", "No"],
         index=1,
-        key="medicamentos"
+        key="medicamentos",
+        horizontal=True
     )
     alergias = st.radio(
         "¿Tiene alguna alergia alimentaria relacionada con aceite de oliva, lactosa, gluten, proteínas del huevo algún condimento?",
         options=["Sí", "No"],
         index=1,
-        key="alergias"
+        key="alergias",
+        horizontal=True
     )
     fumado = st.radio(
         "¿Ha fumado cigarrillos u otros productos en la última hora, antes de hacer esta prueba?",
         options=["Sí", "No"],
         index=1,
-        key="fumado"
+        key="fumado",
+        horizontal=True
     )
     alcohol = st.radio(
         "¿Ha consumido alcohol en la última hora, antes de hacer esta prueba?",
         options=["Sí", "No"],
         index=1,
-        key="alcohol"
+        key="alcohol",
+        horizontal=True
     )
     cafe = st.radio(
         "¿Ha consumido café, chicles, menta en la última hora, antes de hacer esta prueba?",
         options=["Sí", "No"],
         index=1,
-        key="cafe"
+        key="cafe",
+        horizontal=True
     )
     cepillado = st.radio(
         "¿Se cepilló los dientes justo antes del test?",
         options=["Sí", "No"],
         index=1,
-        key="cepillado"
+        key="cepillado",
+        horizontal=True
     )
     fatigado = st.radio(
         "¿Se siente fatigado/a o con sueño?",
         options=["Sí", "No"],
         index=1,
-        key="fatigado"
+        key="fatigado",
+        horizontal=True
     )
     estres = st.radio(
         "¿Siente estrés, ansiedad o malestar emocional?",
         options=["Sí", "No"],
         index=1,
-        key="estres"
+        key="estres",
+        horizontal=True
     )
 
 # ---------- PESTAÑA 2: Datos personales ----------
@@ -148,7 +158,8 @@ with tab2:
         "¿Volvería a participar en esta prueba?",
         options=["Sí", "No"],
         index=1,
-        key="volveria"
+        key="volveria",
+        horizontal=True
     )
 
     contacto = ""
@@ -162,8 +173,8 @@ with tab3:
     st.header("Encuesta")
     st.markdown("**Este aderezo tiene aceite de oliva, aceite de girasol y leche de cabra**")
 
-    conoce = st.radio("¿Conoce este tipo de producto?", options=["Sí", "No"], index=1, key="conoce")
-    ha_probado = st.radio("¿Ha probado este tipo de producto antes?", options=["Sí", "No"], index=1, key="ha_probado")
+    conoce = st.radio("¿Conoce este tipo de producto?", options=["Sí", "No"], index=1, key="conoce", horizontal=True)
+    ha_probado = st.radio("¿Ha probado este tipo de producto antes?", options=["Sí", "No"], index=1, key="ha_probado", horizontal=True)
 
     st.markdown("**¿Suele consumir aderezos similares?**")
     col1, col2, col3, col4 = st.columns(4)
@@ -183,7 +194,8 @@ with tab3:
         "¿Cree que todos los integrantes de su hogar consumirían este aderezo por sus ingredientes?",
         options=["Sí", "No"],
         index=1,
-        key="consumirian"
+        key="consumirian",
+        horizontal=True
     )
 
     frecuencia = st.text_input("¿Con qué frecuencia consume aderezos?", key="frecuencia")
@@ -198,7 +210,7 @@ with tab3:
     if marca == "Otros":
         otros_marca_text = st.text_input("Especifique otra marca", key="marca_otros_text")
 
-    # --- BOTÓN GUARDAR (ahora también reinicia el formulario) ---
+    # Botón guardar (con reinicio)
     if st.button("Guardar respuesta"):
         # Recolectar datos
         nueva_ficha = len(st.session_state.responses) + 1
@@ -239,7 +251,6 @@ with tab3:
         st.success(f"Respuesta guardada correctamente. Ficha N° {nueva_ficha}")
 
         # Reiniciar todos los campos del formulario a sus valores por defecto
-        # (excepto la lista 'responses' que queremos conservar)
         valores_por_defecto = {
             # Tab1 (radios con valor "No")
             "cond_medica": "No",
