@@ -65,121 +65,185 @@ if 'responses' not in st.session_state:
 
 # --- FORMULARIO PRINCIPAL (con limpieza automática al enviar) ---
 with st.form(key="encuesta_form", clear_on_submit=True):
-    # Crear las pestañas (solo 3)
-    tab1, tab2, tab3 = st.tabs([
+    # Crear las pestañas (solo 2)
+    tab1, tab2 = st.tabs([
         "inicial",
-        "Datos Personales",
         "Encuesta"
     ])
 
     # ---------- PESTAÑA 1: Inicial (Influye en la percepción) ----------
     with tab1:
         st.header("Influye en la percepción")
+        # Las preguntas de esta pestaña se mantienen igual, pero también se numerarán
+        # (aunque no se fusionan, las incluimos en el formulario con sus números)
+        # Vamos a numerar las preguntas de la pestaña 1 también para mantener consistencia.
+        # Usaremos un contador que comenzará en 1 y se incrementará en cada pregunta.
 
+        # Inicializamos un contador de preguntas (se usará luego en el diccionario)
+        # Pero como las preguntas están en distintas pestañas, necesitamos un número global.
+        # Definiremos una lista de preguntas con sus claves y etiquetas para luego construir el diccionario.
+        # Para simplificar, asignaremos manualmente los números.
+
+        # Pregunta 1
+        st.markdown("**1. Condición médica**")
         cond_medica = st.radio(
             "¿Tiene alguna condición médica que afecte el gusto, el olfato o la sensibilidad oral (como sinusitis, rinitis, resfrío, gripe, congestión nasal u otra afección en este momento, etc.)?",
             options=["Sí", "No"],
             index=1,
             key="cond_medica",
-            horizontal=True
+            horizontal=True,
+            label_visibility="collapsed"  # Ocultamos la etiqueta porque ya pusimos el número arriba
         )
+
+        # Pregunta 2
+        st.markdown("**2. Medicamentos**")
         medicamentos = st.radio(
             "¿Toma actualmente algún medicamento que pueda alterar el gusto, el olfato o la salivación (como antihistamínicos, antibióticos, ansiolíticos, etc.)?",
             options=["Sí", "No"],
             index=1,
             key="medicamentos",
-            horizontal=True
+            horizontal=True,
+            label_visibility="collapsed"
         )
+
+        # Pregunta 3
+        st.markdown("**3. Alergias alimentarias**")
         alergias = st.radio(
             "¿Tiene alguna alergia alimentaria relacionada con aceite de oliva, lactosa, gluten, proteínas del huevo algún condimento?",
             options=["Sí", "No"],
             index=1,
             key="alergias",
-            horizontal=True
+            horizontal=True,
+            label_visibility="collapsed"
         )
+
+        # Pregunta 4
+        st.markdown("**4. Fumado última hora**")
         fumado = st.radio(
             "¿Ha fumado cigarrillos u otros productos en la última hora, antes de hacer esta prueba?",
             options=["Sí", "No"],
             index=1,
             key="fumado",
-            horizontal=True
+            horizontal=True,
+            label_visibility="collapsed"
         )
+
+        # Pregunta 5
+        st.markdown("**5. Alcohol última hora**")
         alcohol = st.radio(
             "¿Ha consumido alcohol en la última hora, antes de hacer esta prueba?",
             options=["Sí", "No"],
             index=1,
             key="alcohol",
-            horizontal=True
+            horizontal=True,
+            label_visibility="collapsed"
         )
+
+        # Pregunta 6
+        st.markdown("**6. Café/chicles/menta última hora**")
         cafe = st.radio(
             "¿Ha consumido café, chicles, menta en la última hora, antes de hacer esta prueba?",
             options=["Sí", "No"],
             index=1,
             key="cafe",
-            horizontal=True
+            horizontal=True,
+            label_visibility="collapsed"
         )
+
+        # Pregunta 7
+        st.markdown("**7. Cepillado justo antes**")
         cepillado = st.radio(
             "¿Se cepilló los dientes justo antes del test?",
             options=["Sí", "No"],
             index=1,
             key="cepillado",
-            horizontal=True
+            horizontal=True,
+            label_visibility="collapsed"
         )
+
+        # Pregunta 8
+        st.markdown("**8. Fatiga/sueño**")
         fatigado = st.radio(
             "¿Se siente fatigado/a o con sueño?",
             options=["Sí", "No"],
             index=1,
             key="fatigado",
-            horizontal=True
+            horizontal=True,
+            label_visibility="collapsed"
         )
+
+        # Pregunta 9
+        st.markdown("**9. Estrés/ansiedad**")
         estres = st.radio(
             "¿Siente estrés, ansiedad o malestar emocional?",
             options=["Sí", "No"],
             index=1,
             key="estres",
-            horizontal=True
+            horizontal=True,
+            label_visibility="collapsed"
         )
 
-    # ---------- PESTAÑA 2: Datos personales ----------
+    # ---------- PESTAÑA 2: Encuesta (Datos personales + Encuesta del producto) ----------
     with tab2:
-        st.header("Datos Personales")
+        st.header("Encuesta Completa")
 
-        # Nota: el número de ficha se calcula al guardar, no es un campo editable
+        # Mostrar número de ficha (no es una pregunta)
         st.markdown(f"**Ficha N.º:** {len(st.session_state.responses) + 1} (se asignará al guardar)")
 
-        nombre = st.text_input("Nombre", key="nombre")
-        apellido = st.text_input("Apellido", key="apellido")
-        edad = st.number_input("Edad", min_value=0, max_value=120, step=1, key="edad")
+        # --- Datos personales (continuación de la numeración) ---
+        # Pregunta 10
+        st.markdown("**10. Nombre**")
+        nombre = st.text_input("Nombre", key="nombre", label_visibility="collapsed")
+
+        # Pregunta 11
+        st.markdown("**11. Apellido**")
+        apellido = st.text_input("Apellido", key="apellido", label_visibility="collapsed")
+
+        # Pregunta 12
+        st.markdown("**12. Edad**")
+        edad = st.number_input("Edad", min_value=0, max_value=120, step=1, key="edad", label_visibility="collapsed")
+
+        # Pregunta 13
+        st.markdown("**13. Género**")
         genero = st.selectbox(
             "Sexo o Género",
             options=["Femenino", "Masculino", "Prefiero no responder"],
-            key="genero"
+            key="genero",
+            label_visibility="collapsed"
         )
 
+        # Pregunta 14
+        st.markdown("**14. ¿Volvería a participar?**")
         volveria = st.radio(
             "¿Volvería a participar en esta prueba?",
             options=["Sí", "No"],
             index=1,
             key="volveria",
-            horizontal=True
+            horizontal=True,
+            label_visibility="collapsed"
         )
 
-        # Campo condicional (se muestra solo si volveria == "Sí")
+        # Campo condicional (no es una pregunta numerada, es un subcampo de la 14)
         if volveria == "Sí":
             contacto = st.text_input("Contacto (número de teléfono)", key="contacto")
         else:
-            # Aseguramos que la clave exista para evitar errores al guardar
             st.session_state["contacto"] = ""
 
-    # ---------- PESTAÑA 3: Encuesta sobre el producto ----------
-    with tab3:
-        st.header("Encuesta")
-        st.markdown("**Este aderezo tiene aceite de oliva, aceite de girasol y leche de cabra**")
+        # --- Encuesta sobre el producto (continuación) ---
+        st.markdown("---")  # Separador visual
+        st.markdown("**Encuesta sobre el producto**")
+        st.markdown("*Este aderezo tiene aceite de oliva, aceite de girasol y leche de cabra*")
 
-        conoce = st.radio("¿Conoce este tipo de producto?", options=["Sí", "No"], index=1, key="conoce", horizontal=True)
-        ha_probado = st.radio("¿Ha probado este tipo de producto antes?", options=["Sí", "No"], index=1, key="ha_probado", horizontal=True)
+        # Pregunta 15
+        st.markdown("**15. ¿Conoce este tipo de producto?**")
+        conoce = st.radio("¿Conoce este tipo de producto?", options=["Sí", "No"], index=1, key="conoce", horizontal=True, label_visibility="collapsed")
 
-        st.markdown("**¿Suele consumir aderezos similares?**")
+        # Pregunta 16
+        st.markdown("**16. ¿Ha probado antes este tipo de producto?**")
+        ha_probado = st.radio("¿Ha probado este tipo de producto antes?", options=["Sí", "No"], index=1, key="ha_probado", horizontal=True, label_visibility="collapsed")
+
+        # Pregunta 17
+        st.markdown("**17. ¿Suele consumir aderezos similares? (Seleccione todos los que correspondan)**")
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             mayonesa = st.checkbox("Mayonesa", key="sim_mayonesa")
@@ -190,28 +254,39 @@ with st.form(key="encuesta_form", clear_on_submit=True):
         with col4:
             otros_sim = st.checkbox("Otros", key="sim_otros")
 
-        # Campo condicional para "Otros"
+        # Subcampo condicional (no numerado aparte)
         otros_sim_text = ""
         if otros_sim:
             otros_sim_text = st.text_input("Especifique otros aderezos similares", key="sim_otros_text")
         else:
             st.session_state["sim_otros_text"] = ""
 
+        # Pregunta 18
+        st.markdown("**18. ¿Cree que todos los integrantes de su hogar consumirían este aderezo por sus ingredientes?**")
         consumirian = st.radio(
             "¿Cree que todos los integrantes de su hogar consumirían este aderezo por sus ingredientes?",
             options=["Sí", "No"],
             index=1,
             key="consumirian",
-            horizontal=True
+            horizontal=True,
+            label_visibility="collapsed"
         )
 
-        frecuencia = st.text_input("¿Con qué frecuencia consume aderezos?", key="frecuencia")
-        cantidad = st.text_input("¿Qué cantidad de aderezos consumen en su hogar por mes?", key="cantidad")
+        # Pregunta 19
+        st.markdown("**19. ¿Con qué frecuencia consume aderezos?**")
+        frecuencia = st.text_input("Frecuencia", key="frecuencia", label_visibility="collapsed")
 
+        # Pregunta 20
+        st.markdown("**20. ¿Qué cantidad de aderezos consumen en su hogar por mes?**")
+        cantidad = st.text_input("Cantidad mensual", key="cantidad", label_visibility="collapsed")
+
+        # Pregunta 21
+        st.markdown("**21. Marca de aderezos más consumida normalmente en su hogar**")
         marca = st.selectbox(
-            "Marca de aderezos más consumida normalmente en su hogar",
+            "Marca",
             options=["Mayonesa", "Aioli", "Salsas César", "Otros"],
-            key="marca"
+            key="marca",
+            label_visibility="collapsed"
         )
         otros_marca_text = ""
         if marca == "Otros":
@@ -225,38 +300,38 @@ with st.form(key="encuesta_form", clear_on_submit=True):
     # --- PROCESAMIENTO DEL FORMULARIO (solo si se envió) ---
     if submitted:
         nueva_ficha = len(st.session_state.responses) + 1
+        # Construimos el diccionario con claves que incluyen el número de pregunta
         respuesta = {
             "Ficha N°": nueva_ficha,
             "Fecha": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            # Tab1
-            "Condición médica": cond_medica,
-            "Medicamentos": medicamentos,
-            "Alergias": alergias,
-            "Fumado última hora": fumado,
-            "Alcohol última hora": alcohol,
-            "Café/chicles/menta": cafe,
-            "Cepillado antes": cepillado,
-            "Fatiga/sueño": fatigado,
-            "Estrés/ansiedad": estres,
-            # Tab2
-            "Nombre": nombre,
-            "Apellido": apellido,
-            "Edad": edad,
-            "Género": genero,
-            "Volvería a participar": volveria,
-            "Contacto": st.session_state.contacto if volveria == "Sí" else "",
-            # Tab3
-            "Conoce producto": conoce,
-            "Ha probado antes": ha_probado,
-            "Consume Mayonesa": "Sí" if mayonesa else "No",
-            "Consume Aioli": "Sí" if aioli else "No",
-            "Consume Salsas César": "Sí" if cesar else "No",
-            "Consume Otros similares": otros_sim_text if otros_sim else "",
-            "Todos consumirían": consumirian,
-            "Frecuencia consumo": frecuencia,
-            "Cantidad mensual": cantidad,
-            "Marca preferida": marca,
-            "Otra marca especificada": otros_marca_text if marca == "Otros" else ""
+            # Preguntas de la pestaña 1 (numeradas del 1 al 9)
+            "P1_Condición médica": cond_medica,
+            "P2_Medicamentos": medicamentos,
+            "P3_Alergias": alergias,
+            "P4_Fumado última hora": fumado,
+            "P5_Alcohol última hora": alcohol,
+            "P6_Café/chicles/menta": cafe,
+            "P7_Cepillado antes": cepillado,
+            "P8_Fatiga/sueño": fatigado,
+            "P9_Estrés/ansiedad": estres,
+            # Preguntas de la pestaña 2 (a partir de la 10)
+            "P10_Nombre": nombre,
+            "P11_Apellido": apellido,
+            "P12_Edad": edad,
+            "P13_Género": genero,
+            "P14_Volvería a participar": volveria,
+            "P14_Contacto": st.session_state.contacto if volveria == "Sí" else "",
+            "P15_Conoce producto": conoce,
+            "P16_Ha probado antes": ha_probado,
+            "P17_Consume Mayonesa": "Sí" if mayonesa else "No",
+            "P17_Consume Aioli": "Sí" if aioli else "No",
+            "P17_Consume Salsas César": "Sí" if cesar else "No",
+            "P17_Consume Otros similares": otros_sim_text if otros_sim else "",
+            "P18_Todos consumirían": consumirian,
+            "P19_Frecuencia consumo": frecuencia,
+            "P20_Cantidad mensual": cantidad,
+            "P21_Marca preferida": marca,
+            "P21_Otra marca especificada": otros_marca_text if marca == "Otros" else ""
         }
         st.session_state.responses.append(respuesta)
         st.success(f"Respuesta guardada correctamente. Ficha N° {nueva_ficha}")
