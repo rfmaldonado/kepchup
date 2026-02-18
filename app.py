@@ -232,11 +232,11 @@ with tab2:
                 "P12_Otra marca especificada": otros_marca_text if marca == "Otros" else ""
             }
             st.session_state.responses.append(respuesta)
-            reset_encuesta_form()  # Elimina las claves para resetear
+            reset_encuesta_form()
             st.success(f"Respuesta guardada correctamente. Ficha N° {id_unico}")
             st.rerun()
 
-# ---------- PESTAÑA 3: Datos (exportación y cierre de sesión) ----------
+# ---------- PESTAÑA 3: Datos (exportación y reinicio) ----------
 with tab3:
     st.header("Exportar datos")
 
@@ -249,12 +249,14 @@ with tab3:
             df.to_excel(writer, index=False, sheet_name='Respuestas')
         output.seek(0)
 
+        # Botón de descarga con etiqueta "Exportar"
         if st.download_button(
-            label="Descargar Excel y cerrar sesión",
+            label="Exportar",
             data=output,
             file_name=f"evaluacion_sensorial_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ):
+            # Limpiar datos y reiniciar sesión (efecto F5)
             st.session_state.responses = []
             st.session_state.session_id = str(uuid.uuid4())
             st.rerun()
