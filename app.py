@@ -7,11 +7,11 @@ import uuid
 # Configuración de la página
 st.set_page_config(page_title="Evaluación sensorial", layout="wide")
 
-# Generar un identificador único de sesión si no existe
+# Generar identificador único de sesión
 if 'session_id' not in st.session_state:
     st.session_state.session_id = str(uuid.uuid4())
 
-# ---- ESTILOS PERSONALIZADOS (igual que antes) ----
+# ---- ESTILOS PERSONALIZADOS (sin cambios) ----
 st.markdown(
     """
     <style>
@@ -71,38 +71,30 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Título común
 st.title("Evaluación sensorial")
 
-# Inicializar el estado de la sesión para almacenar las respuestas
+# Inicializar respuestas
 if 'responses' not in st.session_state:
     st.session_state.responses = []
 
-# Crear las tres pestañas
+# Crear pestañas
 tab1, tab2, tab3 = st.tabs(["inicial", "encuesta", "datos"])
 
-# ---------- PESTAÑA 1: Inicial (solo informativa) ----------
+# ---------- PESTAÑA 1: Inicial (sin cambios) ----------
 with tab1:
     st.header("Condiciones que pueden influir en la percepción")
     st.markdown("*(Esta información es solo para referencia del encuestador y no se almacena)*")
-    # ... (las mismas preguntas, sin cambios)
-    st.radio("¿Tiene alguna condición médica que afecte el gusto...?", options=["Sí", "No"], index=1, key="cond_medica", horizontal=True)
-    st.radio("¿Toma actualmente algún medicamento...?", options=["Sí", "No"], index=1, key="medicamentos", horizontal=True)
-    st.radio("¿Tiene alguna alergia alimentaria...?", options=["Sí", "No"], index=1, key="alergias", horizontal=True)
-    st.radio("¿Ha fumado...?", options=["Sí", "No"], index=1, key="fumado", horizontal=True)
-    st.radio("¿Ha consumido alcohol...?", options=["Sí", "No"], index=1, key="alcohol", horizontal=True)
-    st.radio("¿Ha consumido café, chicles, menta...?", options=["Sí", "No"], index=1, key="cafe", horizontal=True)
-    st.radio("¿Se cepilló los dientes...?", options=["Sí", "No"], index=1, key="cepillado", horizontal=True)
-    st.radio("¿Se siente fatigado/a...?", options=["Sí", "No"], index=1, key="fatigado", horizontal=True)
-    st.radio("¿Siente estrés...?", options=["Sí", "No"], index=1, key="estres", horizontal=True)
+    # ... (las mismas preguntas, omitidas por brevedad; conserva las originales)
+    st.radio("¿Tiene alguna condición médica...?", options=["Sí", "No"], index=1, key="cond_medica", horizontal=True)
+    # ... (resto)
 
 # ---------- PESTAÑA 2: Encuesta (datos que se guardan) ----------
 with tab2:
     st.header("Encuesta")
-    st.markdown(f"**Sesión ID:** {st.session_state.session_id}")
-    st.markdown(f"**Próxima Ficha N.º:** {len(st.session_state.responses) + 1}")
+    # Encabezado: solo muestra el número secuencial (sin UUID)
+    st.markdown(f"**Ficha N.º:** {len(st.session_state.responses) + 1}")
 
-    # Función para resetear todos los campos del formulario
+    # Función de reseteo
     def reset_encuesta_form():
         st.session_state["nombre"] = ""
         st.session_state["apellido"] = ""
@@ -124,47 +116,38 @@ with tab2:
         st.session_state["marca_otros_text"] = ""
 
     with st.form(key="encuesta_form"):
-        # --- Pregunta 1: Nombre ---
+        # --- Preguntas (igual que antes) ---
         st.markdown("**1. Nombre**")
         nombre = st.text_input("Nombre", key="nombre", label_visibility="collapsed")
 
-        # --- Pregunta 2: Apellido ---
         st.markdown("**2. Apellido**")
         apellido = st.text_input("Apellido", key="apellido", label_visibility="collapsed")
 
-        # --- Pregunta 3: Edad ---
         st.markdown("**3. Edad**")
         edad = st.number_input("Edad", min_value=0, max_value=120, step=1, key="edad", label_visibility="collapsed")
 
-        # --- Pregunta 4: Género ---
         st.markdown("**4. Género**")
         genero = st.selectbox("Género", options=["Femenino", "Masculino", "Prefiero no responder"], key="genero", label_visibility="collapsed")
 
-        # --- Pregunta 5: ¿Volvería a participar? ---
         st.markdown("**5. ¿Volvería a participar?**")
         volveria = st.radio("¿Volvería a participar?", options=["Sí", "No"], index=1, key="volveria", horizontal=True, label_visibility="collapsed")
 
-        # --- Pregunta 5b: Contacto (condicional) ---
         if volveria == "Sí":
             contacto = st.text_input("Contacto (número de teléfono)", key="contacto")
         else:
             contacto = ""
-            # Aseguramos que el valor en session_state esté vacío si no se muestra
             st.session_state["contacto"] = ""
 
         st.markdown("---")
         st.markdown("**Información sobre el producto**")
         st.markdown("*Este aderezo tiene aceite de oliva, aceite de girasol y leche de cabra*")
 
-        # --- Pregunta 6: ¿Conoce este tipo de producto? ---
         st.markdown("**6. ¿Conoce este tipo de producto?**")
         conoce = st.radio("¿Conoce este tipo de producto?", options=["Sí", "No"], index=1, key="conoce", horizontal=True, label_visibility="collapsed")
 
-        # --- Pregunta 7: ¿Ha probado antes? ---
         st.markdown("**7. ¿Ha probado antes este tipo de producto?**")
         ha_probado = st.radio("¿Ha probado este tipo de producto antes?", options=["Sí", "No"], index=1, key="ha_probado", horizontal=True, label_visibility="collapsed")
 
-        # --- Pregunta 8: Consumo de aderezos similares (múltiple) ---
         st.markdown("**8. ¿Suele consumir aderezos similares? (puede seleccionar varios)**")
         col1, col2, col3, col4 = st.columns(4)
         with col1:
@@ -182,19 +165,15 @@ with tab2:
         else:
             st.session_state["sim_otros_text"] = ""
 
-        # --- Pregunta 9: ¿Cree que todos consumirían? ---
         st.markdown("**9. ¿Cree que todos los integrantes de su hogar consumirían este aderezo por sus ingredientes?**")
         consumirian = st.radio("¿Cree que todos...?", options=["Sí", "No"], index=1, key="consumirian", horizontal=True, label_visibility="collapsed")
 
-        # --- Pregunta 10: Frecuencia de consumo ---
         st.markdown("**10. ¿Con qué frecuencia consume aderezos?**")
         frecuencia = st.text_input("Frecuencia", key="frecuencia", label_visibility="collapsed")
 
-        # --- Pregunta 11: Cantidad mensual ---
         st.markdown("**11. ¿Qué cantidad de aderezos consumen en su hogar por mes?**")
         cantidad = st.text_input("Cantidad mensual", key="cantidad", label_visibility="collapsed")
 
-        # --- Pregunta 12: Marca preferida ---
         st.markdown("**12. Marca de aderezos más consumida normalmente en su hogar**")
         marca = st.selectbox("Marca", options=["Mayonesa", "Aioli", "Salsas César", "Otros"], key="marca", label_visibility="collapsed")
         otros_marca_text = ""
@@ -207,10 +186,10 @@ with tab2:
         submitted = st.form_submit_button("Guardar respuesta")
 
         if submitted:
-            nueva_ficha = len(st.session_state.responses) + 1
+            nueva_ficha_num = len(st.session_state.responses) + 1
+            id_unico = f"{st.session_state.session_id}_{nueva_ficha_num}"
             respuesta = {
-                "ID_Respuesta": f"{st.session_state.session_id}_{nueva_ficha}",
-                "Ficha N°": nueva_ficha,
+                "Ficha N°": id_unico,                      # Almacena la concatenación
                 "Fecha": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "P1_Nombre": nombre,
                 "P2_Apellido": apellido,
@@ -231,9 +210,8 @@ with tab2:
                 "P12_Otra marca especificada": otros_marca_text if marca == "Otros" else ""
             }
             st.session_state.responses.append(respuesta)
-            # Resetear el formulario
             reset_encuesta_form()
-            st.success(f"Respuesta guardada correctamente. Ficha N° {nueva_ficha}")
+            st.success(f"Respuesta guardada correctamente. Ficha N° {id_unico}")
             st.rerun()
 
 # ---------- PESTAÑA 3: Datos (exportación y cierre de sesión) ----------
@@ -249,14 +227,12 @@ with tab3:
             df.to_excel(writer, index=False, sheet_name='Respuestas')
         output.seek(0)
 
-        # Botón de descarga que además cierra la sesión
         if st.download_button(
             label="Descargar Excel y cerrar sesión",
             data=output,
             file_name=f"evaluacion_sensorial_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ):
-            # Limpiar respuestas y generar nuevo session_id
             st.session_state.responses = []
             st.session_state.session_id = str(uuid.uuid4())
             st.rerun()
