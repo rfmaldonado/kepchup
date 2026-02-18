@@ -2,11 +2,16 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 import datetime
+import uuid
 
 # Configuración de la página
 st.set_page_config(page_title="Evaluación sensorial", layout="wide")
 
-# ---- ESTILOS PERSONALIZADOS: FONDO VERDE PÁLIDO, TEXTO NEGRO, BORDES EN PESTAÑAS ----
+# Generar un identificador único de sesión si no existe
+if 'session_id' not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())
+
+# ---- ESTILOS PERSONALIZADOS (igual que antes) ----
 st.markdown(
     """
     <style>
@@ -34,7 +39,6 @@ st.markdown(
         background-color: #218838;
         color: white;
     }
-    /* Tabs: contenedor con borde */
     .stTabs [data-baseweb="tab-list"] {
         background-color: #c3e6cb;
         border: 1px solid #28a745;
@@ -70,90 +74,55 @@ st.markdown(
 # Título común
 st.title("Evaluación sensorial")
 
-# Inicializar el estado de la sesión para almacenar las respuestas (solo de la segunda pestaña)
+# Inicializar el estado de la sesión para almacenar las respuestas
 if 'responses' not in st.session_state:
     st.session_state.responses = []
 
 # Crear las tres pestañas
 tab1, tab2, tab3 = st.tabs(["inicial", "encuesta", "datos"])
 
-# ---------- PESTAÑA 1: Inicial (solo informativa, sus datos NO se guardan) ----------
+# ---------- PESTAÑA 1: Inicial (solo informativa) ----------
 with tab1:
     st.header("Condiciones que pueden influir en la percepción")
     st.markdown("*(Esta información es solo para referencia del encuestador y no se almacena)*")
+    # ... (las mismas preguntas, sin cambios)
+    st.radio("¿Tiene alguna condición médica que afecte el gusto...?", options=["Sí", "No"], index=1, key="cond_medica", horizontal=True)
+    st.radio("¿Toma actualmente algún medicamento...?", options=["Sí", "No"], index=1, key="medicamentos", horizontal=True)
+    st.radio("¿Tiene alguna alergia alimentaria...?", options=["Sí", "No"], index=1, key="alergias", horizontal=True)
+    st.radio("¿Ha fumado...?", options=["Sí", "No"], index=1, key="fumado", horizontal=True)
+    st.radio("¿Ha consumido alcohol...?", options=["Sí", "No"], index=1, key="alcohol", horizontal=True)
+    st.radio("¿Ha consumido café, chicles, menta...?", options=["Sí", "No"], index=1, key="cafe", horizontal=True)
+    st.radio("¿Se cepilló los dientes...?", options=["Sí", "No"], index=1, key="cepillado", horizontal=True)
+    st.radio("¿Se siente fatigado/a...?", options=["Sí", "No"], index=1, key="fatigado", horizontal=True)
+    st.radio("¿Siente estrés...?", options=["Sí", "No"], index=1, key="estres", horizontal=True)
 
-    # Preguntas (sin registro, pero con keys para mantener estado si es necesario)
-    st.radio(
-        "¿Tiene alguna condición médica que afecte el gusto, el olfato o la sensibilidad oral?",
-        options=["Sí", "No"],
-        index=1,
-        key="cond_medica",
-        horizontal=True
-    )
-    st.radio(
-        "¿Toma actualmente algún medicamento que pueda alterar el gusto, el olfato o la salivación?",
-        options=["Sí", "No"],
-        index=1,
-        key="medicamentos",
-        horizontal=True
-    )
-    st.radio(
-        "¿Tiene alguna alergia alimentaria relacionada con aceite de oliva, lactosa, gluten, proteínas del huevo algún condimento?",
-        options=["Sí", "No"],
-        index=1,
-        key="alergias",
-        horizontal=True
-    )
-    st.radio(
-        "¿Ha fumado cigarrillos u otros productos en la última hora?",
-        options=["Sí", "No"],
-        index=1,
-        key="fumado",
-        horizontal=True
-    )
-    st.radio(
-        "¿Ha consumido alcohol en la última hora?",
-        options=["Sí", "No"],
-        index=1,
-        key="alcohol",
-        horizontal=True
-    )
-    st.radio(
-        "¿Ha consumido café, chicles, menta en la última hora?",
-        options=["Sí", "No"],
-        index=1,
-        key="cafe",
-        horizontal=True
-    )
-    st.radio(
-        "¿Se cepilló los dientes justo antes del test?",
-        options=["Sí", "No"],
-        index=1,
-        key="cepillado",
-        horizontal=True
-    )
-    st.radio(
-        "¿Se siente fatigado/a o con sueño?",
-        options=["Sí", "No"],
-        index=1,
-        key="fatigado",
-        horizontal=True
-    )
-    st.radio(
-        "¿Siente estrés, ansiedad o malestar emocional?",
-        options=["Sí", "No"],
-        index=1,
-        key="estres",
-        horizontal=True
-    )
-
-# ---------- PESTAÑA 2: Encuesta (datos que SÍ se guardan) ----------
+# ---------- PESTAÑA 2: Encuesta (datos que se guardan) ----------
 with tab2:
     st.header("Encuesta")
+    st.markdown(f"**Sesión ID:** {st.session_state.session_id}")
+    st.markdown(f"**Próxima Ficha N.º:** {len(st.session_state.responses) + 1}")
 
-    st.markdown(f"**Ficha N.º:** {len(st.session_state.responses) + 1} (se asignará al guardar)")
+    # Función para resetear todos los campos del formulario
+    def reset_encuesta_form():
+        st.session_state["nombre"] = ""
+        st.session_state["apellido"] = ""
+        st.session_state["edad"] = 0
+        st.session_state["genero"] = "Femenino"
+        st.session_state["volveria"] = "No"
+        st.session_state["contacto"] = ""
+        st.session_state["conoce"] = "No"
+        st.session_state["ha_probado"] = "No"
+        st.session_state["sim_mayonesa"] = False
+        st.session_state["sim_aioli"] = False
+        st.session_state["sim_cesar"] = False
+        st.session_state["sim_otros"] = False
+        st.session_state["sim_otros_text"] = ""
+        st.session_state["consumirian"] = "No"
+        st.session_state["frecuencia"] = ""
+        st.session_state["cantidad"] = ""
+        st.session_state["marca"] = "Mayonesa"
+        st.session_state["marca_otros_text"] = ""
 
-    # Formulario para los datos que se guardan
     with st.form(key="encuesta_form"):
         # --- Pregunta 1: Nombre ---
         st.markdown("**1. Nombre**")
@@ -169,29 +138,18 @@ with tab2:
 
         # --- Pregunta 4: Género ---
         st.markdown("**4. Género**")
-        genero = st.selectbox(
-            "Género",
-            options=["Femenino", "Masculino", "Prefiero no responder"],
-            key="genero",
-            label_visibility="collapsed"
-        )
+        genero = st.selectbox("Género", options=["Femenino", "Masculino", "Prefiero no responder"], key="genero", label_visibility="collapsed")
 
         # --- Pregunta 5: ¿Volvería a participar? ---
         st.markdown("**5. ¿Volvería a participar?**")
-        volveria = st.radio(
-            "¿Volvería a participar en esta prueba?",
-            options=["Sí", "No"],
-            index=1,
-            key="volveria",
-            horizontal=True,
-            label_visibility="collapsed"
-        )
+        volveria = st.radio("¿Volvería a participar?", options=["Sí", "No"], index=1, key="volveria", horizontal=True, label_visibility="collapsed")
 
-        # --- Pregunta 5b: Contacto (solo si responde Sí) ---
+        # --- Pregunta 5b: Contacto (condicional) ---
         if volveria == "Sí":
             contacto = st.text_input("Contacto (número de teléfono)", key="contacto")
         else:
             contacto = ""
+            # Aseguramos que el valor en session_state esté vacío si no se muestra
             st.session_state["contacto"] = ""
 
         st.markdown("---")
@@ -200,25 +158,11 @@ with tab2:
 
         # --- Pregunta 6: ¿Conoce este tipo de producto? ---
         st.markdown("**6. ¿Conoce este tipo de producto?**")
-        conoce = st.radio(
-            "¿Conoce este tipo de producto?",
-            options=["Sí", "No"],
-            index=1,
-            key="conoce",
-            horizontal=True,
-            label_visibility="collapsed"
-        )
+        conoce = st.radio("¿Conoce este tipo de producto?", options=["Sí", "No"], index=1, key="conoce", horizontal=True, label_visibility="collapsed")
 
         # --- Pregunta 7: ¿Ha probado antes? ---
         st.markdown("**7. ¿Ha probado antes este tipo de producto?**")
-        ha_probado = st.radio(
-            "¿Ha probado este tipo de producto antes?",
-            options=["Sí", "No"],
-            index=1,
-            key="ha_probado",
-            horizontal=True,
-            label_visibility="collapsed"
-        )
+        ha_probado = st.radio("¿Ha probado este tipo de producto antes?", options=["Sí", "No"], index=1, key="ha_probado", horizontal=True, label_visibility="collapsed")
 
         # --- Pregunta 8: Consumo de aderezos similares (múltiple) ---
         st.markdown("**8. ¿Suele consumir aderezos similares? (puede seleccionar varios)**")
@@ -240,14 +184,7 @@ with tab2:
 
         # --- Pregunta 9: ¿Cree que todos consumirían? ---
         st.markdown("**9. ¿Cree que todos los integrantes de su hogar consumirían este aderezo por sus ingredientes?**")
-        consumirian = st.radio(
-            "¿Cree que todos los integrantes de su hogar consumirían este aderezo por sus ingredientes?",
-            options=["Sí", "No"],
-            index=1,
-            key="consumirian",
-            horizontal=True,
-            label_visibility="collapsed"
-        )
+        consumirian = st.radio("¿Cree que todos...?", options=["Sí", "No"], index=1, key="consumirian", horizontal=True, label_visibility="collapsed")
 
         # --- Pregunta 10: Frecuencia de consumo ---
         st.markdown("**10. ¿Con qué frecuencia consume aderezos?**")
@@ -259,26 +196,20 @@ with tab2:
 
         # --- Pregunta 12: Marca preferida ---
         st.markdown("**12. Marca de aderezos más consumida normalmente en su hogar**")
-        marca = st.selectbox(
-            "Marca",
-            options=["Mayonesa", "Aioli", "Salsas César", "Otros"],
-            key="marca",
-            label_visibility="collapsed"
-        )
+        marca = st.selectbox("Marca", options=["Mayonesa", "Aioli", "Salsas César", "Otros"], key="marca", label_visibility="collapsed")
         otros_marca_text = ""
         if marca == "Otros":
             otros_marca_text = st.text_input("Especifique otra marca", key="marca_otros_text")
         else:
             st.session_state["marca_otros_text"] = ""
 
-        # Botón de guardar (dentro del formulario)
+        # Botón de guardar
         submitted = st.form_submit_button("Guardar respuesta")
 
-        # Procesar el envío del formulario
         if submitted:
             nueva_ficha = len(st.session_state.responses) + 1
-            # Solo guardamos los datos de esta pestaña (los de la pestaña "inicial" se ignoran)
             respuesta = {
+                "ID_Respuesta": f"{st.session_state.session_id}_{nueva_ficha}",
                 "Ficha N°": nueva_ficha,
                 "Fecha": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "P1_Nombre": nombre,
@@ -300,9 +231,12 @@ with tab2:
                 "P12_Otra marca especificada": otros_marca_text if marca == "Otros" else ""
             }
             st.session_state.responses.append(respuesta)
+            # Resetear el formulario
+            reset_encuesta_form()
             st.success(f"Respuesta guardada correctamente. Ficha N° {nueva_ficha}")
+            st.rerun()
 
-# ---------- PESTAÑA 3: Datos (exportación) ----------
+# ---------- PESTAÑA 3: Datos (exportación y cierre de sesión) ----------
 with tab3:
     st.header("Exportar datos")
 
@@ -315,11 +249,16 @@ with tab3:
             df.to_excel(writer, index=False, sheet_name='Respuestas')
         output.seek(0)
 
-        st.download_button(
-            label="Descargar",
+        # Botón de descarga que además cierra la sesión
+        if st.download_button(
+            label="Descargar Excel y cerrar sesión",
             data=output,
             file_name=f"evaluacion_sensorial_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+        ):
+            # Limpiar respuestas y generar nuevo session_id
+            st.session_state.responses = []
+            st.session_state.session_id = str(uuid.uuid4())
+            st.rerun()
     else:
         st.info("Aún no hay respuestas guardadas. Complete y guarde al menos una para poder exportar.")
